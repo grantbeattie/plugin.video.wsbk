@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="plugin.video.wsbk" name="World Superbikes (WSBK)" provider-name="grb" version="1.0">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.beautifulsoup4" version="4.3.2"/>
+    <import addon="script.module.elementtree" version="1.2.0"/>
+  </requires>
+  <extension library="addon.py" point="xbmc.python.pluginsource" provides="video">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>World Superbikes (WSBK) online streaming</summary>
+    <description>World Superbikes (WSBK) online streaming. All the action from the World Superbike Championship. Some content is available without a login, but most requires an Energy Zone Login (free) or Video Pass (paid subscription)</description>
+    <provides>video</provides>
+    <platform>all</platform>
+  </extension>
+</addon>

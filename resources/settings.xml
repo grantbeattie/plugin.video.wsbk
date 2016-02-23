@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+  <category label="Settings">
+    <setting id="username" type="text" label="Username" default=""/>
+    <setting id="password" type="text" label="Password" default="" option="hidden"/>
+    <setting id="stream_type" type="labelenum" label="Stream Type" default="RTMP" values="RTMP|HLS"/>
+    <setting id="proxy_host" type="text" label="Proxy hostname" default=""/>
+    <setting id="proxy_port" type="text" label="Proxy port" default=""/>
+    <setting id="proxy_username" type="text" label="Proxy username" default=""/>
+    <setting id="proxy_password" type="text" label="Proxy password" default="" option="hidden"/>
+  </category>
+</settings>
