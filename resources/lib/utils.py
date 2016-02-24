@@ -119,7 +119,6 @@ def get_stream_url(nid):
 		json_url = "/en/video/mobile/demand/0/%s" % nid
 		res = http_get(json_url, loadcookies = True)
 		json_data = json.load(res)
-		log(json_data)
 
 		if 'feeds' in json_data:
 			feed = json_data['feeds'][0]
