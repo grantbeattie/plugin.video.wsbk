@@ -116,13 +116,13 @@ def get_stream_type():
 
 def get_stream_url(nid):
 	if get_stream_type() == 'HLS':
-		json_url = "/en/video/mobile/demand/0/%s" % nid
+		json_url = "/en/video/demand/mobile/srcweb/0/%s" % nid
 		res = http_get(json_url, loadcookies = True)
 		json_data = json.load(res)
 
-		if 'feeds' in json_data:
-			feed = json_data['feeds'][0]
-			stream_url = feed['urllist']
+		if 'videos' in json_data:
+			feed = json_data['videos'][0]['video_data'][0]['langs_content'][0]['feeds'][0]
+			stream_url = feed['m3u8']
 		else:
 			stream_url = ''
 
@@ -158,7 +158,7 @@ def get_metadata(nid):
 	if nid == 'live':
 		url = '/en/video/multilive/meta/0/0'
 	else:
-		url = '/en/video/demand/meta/%s' % nid
+		url = '/en/video/demand/meta_hds/%s' % nid
 
 	res = http_get(url, loadcookies = True)
 	root = ET.fromstring(res.read())
@@ -167,11 +167,9 @@ def get_metadata(nid):
 	if 'error_msg' in root.attrib:
 		meta['error_msg'] = root.attrib['error_msg']
 	else:
-		if root.find('video').attrib['useraccess'] is not None: meta['access'] = root.find('video').attrib['useraccess']
-		if root.find('video').attrib['smil_url'] is not None: meta['smil_url'] = root.find('video').attrib['smil_url']
 		if nid != 'live':
-			if root.attrib['title'] is not None: meta['title'] = root.attrib['title']
-			if root.attrib['image_url'] is not None: meta['thumbnail_url'] = root.attrib['image_url']
+			if root.find('video').attrib['title'] is not None: meta['title'] = root.find('video').attrib['title']
+			if root.find('video').attrib['image_url'] is not None: meta['thumbnail_url'] = root.find('video').attrib['image_url']
 
 	return meta
 
@@ -180,7 +178,7 @@ def get_perms(nid):
 	if nid == 'live':
 		url = '/en/video/multilive/perms/0/0'
 	else:
-		url = '/en/video/demand/perms/%s' % nid
+		url = '/en/video/demand/perms/0/%s' % nid
 
 	res = http_get(url, loadcookies = True)
 	json_data = json.load(res)
