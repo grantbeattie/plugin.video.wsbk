@@ -1,0 +1,8 @@
+1.1
+
+- Fix HLS after latest update broke streams
+
+
+1.0
+
+- Initial release
