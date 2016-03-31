@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 NAME = 'WSBK'
-VER = '1.0'
+VER = '1.1'
 ADDON_ID = 'plugin.video.wsbk'
 
 http_headers = { 'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 7_1_1 like Mac OS X) AppleWebKit/537.51.2 (KHTML, like Gecko) Mobile/11D201' }
