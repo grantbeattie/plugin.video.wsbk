@@ -14,22 +14,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
-import utils, index
+import utils
 
 try:
 	import xbmc, xbmcgui, xbmcplugin
 except ImportError:
 	pass
 
-def play(url, nid=''):
+def play(url, nid):
 	utils.log('play: ' + urllib.quote(url))
-	utils.log('nid: ' + nid)
-
-	if nid == '':
-		res = utils.http_get(urllib.quote(url))
-		html = res.read()
-		m = re.search('var nid="(\d+)"', html, re.MULTILINE)
-		nid = m.group(1)
 
 	meta = utils.get_metadata(nid)
 
@@ -42,13 +35,13 @@ def play(url, nid=''):
 	# permission dance. if we're already logged in (have a valid cookie), no need to log in again
 	perms = utils.get_perms(nid)
 
-	if perms['permission'] == 'false':
+	if not perms:
 		# login and recheck video permissions
 		if not utils.wsbk_login():
 			return
 
 		perms = utils.get_perms(nid)
-		if perms['permission'] == 'false':
+		if not perms:
 			# we really mustn't have permission
 			utils.log('no permission for video %s' % nid)
 			utils.dialog_error('No permission to access this video. Check login details in plugin settings.')

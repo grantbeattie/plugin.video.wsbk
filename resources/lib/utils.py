@@ -83,7 +83,13 @@ def build_url(query):
 
 
 def log(msg):
-	print "[%s %s] %s" % (config.NAME, config.VER, msg)
+	xbmc.log(msg="[%s %s] %s" % (config.NAME, config.VER, msg), level=xbmc.LOGNOTICE)
+
+
+def isTrue(val):
+	if type(val) == type(True): return val
+	if str(val).lower() == 'true': return True
+	return False
 
 
 def wsbk_login():
@@ -120,11 +126,10 @@ def get_stream_url(nid):
 		res = http_get(json_url, loadcookies = True)
 		json_data = json.load(res)
 
+		stream_url = ''
 		if 'videos' in json_data:
 			feed = json_data['videos'][0]['video_data'][0]['langs_content'][0]['feeds'][0]
 			stream_url = feed['m3u8']
-		else:
-			stream_url = ''
 
 	else:
 		if nid == 'live':
@@ -184,11 +189,11 @@ def get_perms(nid):
 	json_data = json.load(res)
 
 	if 'permission' in json_data:
-		perms = json_data
+		return isTrue(json_data['permission'])
 	elif 'permission_user' in json_data:
-		perms['permission'] = json_data['permission_user']
-
-	return perms
+		return isTrue(json_data['permission_user'])
+	else:
+		return False
 
 
 def dialog_error(err):
