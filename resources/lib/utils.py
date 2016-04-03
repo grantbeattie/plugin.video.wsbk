@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, os
-import urllib, urllib2, cookielib, json
+import urllib, urllib2, cookielib, json, re
 import xml.etree.ElementTree as ET
 import xbmc, xbmcaddon, xbmcgui
 
@@ -116,12 +116,17 @@ def wsbk_login():
 	return True
 
 
-def get_stream_type():
-	return addon.getSetting('stream_type')
-
-
 def get_stream_url(nid):
-	if get_stream_type() == 'HLS':
+	if nid == 'live':
+		json_url = "/en/video/live/mobile/srcweb/0"
+		res = http_get(json_url, loadcookies = True)
+		json_data = json.load(res)
+
+		# 0 -> akamai, 1 -> level3
+		feed = json_data['live_data'][0]['langs_content']['feeds'][0]
+		stream_url = feed['m3u8']
+
+	else:
 		json_url = "/en/video/demand/mobile/srcweb/0/%s" % nid
 		res = http_get(json_url, loadcookies = True)
 		json_data = json.load(res)
@@ -131,37 +136,12 @@ def get_stream_url(nid):
 			feed = json_data['videos'][0]['video_data'][0]['langs_content'][0]['feeds'][0]
 			stream_url = feed['m3u8']
 
-	else:
-		if nid == 'live':
-			xml_url = '/en/video/multilive/play/lvl3_multilive_1.smil'
-		else:
-			xml_url = "/en/video/demand/play/%s_other.smil" % nid
-
-		res = http_get(xml_url, loadcookies = True)
-		root = ET.fromstring(res.read())
-		rtmp_base = root.find('head').find('meta').attrib['base']
-
-		streams = []
-		for v in root.find('body').find('switch').findall('video'):
-			streams.append(v.attrib)
-
-		# return source with the highest bitrate
-		rtmp_src = sorted(streams, key=lambda k: int(k['system-bitrate']))[-1]['src']
-		live_str = ''
-
-		if nid == 'live': live_str = 'live=true'
-
-		if rtmp_src == 'none':
-			stream_url = ''
-		else:
-			stream_url = "%s playpath=%s %s" % (rtmp_base, rtmp_src, live_str)
-
 	return stream_url
 
 
 def get_metadata(nid):
 	if nid == 'live':
-		url = '/en/video/multilive/meta/0/0'
+		url = '/en/video/live/meta_hds/0'
 	else:
 		url = '/en/video/demand/meta_hds/%s' % nid
 
@@ -181,17 +161,19 @@ def get_metadata(nid):
 
 def get_perms(nid):
 	if nid == 'live':
-		url = '/en/video/multilive/perms/0/0'
+		url = '/en/video/live/perms/0'
 	else:
 		url = '/en/video/demand/perms/0/%s' % nid
 
 	res = http_get(url, loadcookies = True)
-	json_data = json.load(res)
+	# live perms json is surrounded by (); which confuses Python json
+	json_str = re.sub('(^\(|\);$)', '', res.read())
+	json_data = json.loads(json_str)
 
 	if 'permission' in json_data:
 		return isTrue(json_data['permission'])
-	elif 'permission_user' in json_data:
-		return isTrue(json_data['permission_user'])
+	elif 'perms_user' in json_data:
+		return isTrue(json_data['perms_user'])
 	else:
 		return False
 
