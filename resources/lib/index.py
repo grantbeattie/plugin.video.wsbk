@@ -27,7 +27,7 @@ def scrape_season_list():
 
 	html = utils.http_get("/en/videos/all_videos/")
 	soup = BeautifulSoup(html)
-	for year in soup.find("select", id="season_year").find_all("option"):
+	for year in soup.find("select", id="filter-by-year").find_all("option"):
 		if year.attrs['value'] != "":
 			season_list.append(year.text)
 
@@ -146,6 +146,7 @@ def build_index(sid="", eid="", category="", vtid=""):
 		cat_list = [
 			('Superbike', 'sbk'),
 			('Supersport', 'ssp'),
+			('Supersport 300', 'ssp300'),
 			('Superstock 1000', 'stk'),
 			('Superstock 600', 'st6'),
 			('European Junior Cup', 'ejc')

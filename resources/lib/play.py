@@ -24,13 +24,17 @@ except ImportError:
 def play(url, nid):
 	utils.log('play: ' + urllib.quote(url))
 
-	meta = utils.get_metadata(nid)
+	if nid == 'live':
+		meta = utils.get_metadata(nid)
 
-	# this is usually the live stream isn't currently active
-	if 'error_msg' in meta:
-		utils.log('cannot play stream: %s, %s' % (url, meta['error_msg']))
-		utils.dialog_error(meta['error_msg'])
-		return
+		# this is usually the live stream isn't currently active
+		if 'error_msg' in meta:
+			utils.log('cannot play stream: %s, %s' % (url, meta['error_msg']))
+			utils.dialog_error(meta['error_msg'])
+			return
+
+	"""
+	# XXX disabled as not currently working?
 
 	# permission dance. if we're already logged in (have a valid cookie), no need to log in again
 	perms = utils.get_perms(nid)
@@ -46,14 +50,10 @@ def play(url, nid):
 			utils.log('no permission for video %s' % nid)
 			utils.dialog_error('No permission to access this video. Check login details in plugin settings.')
 			return
+	"""
 
-	stream_url = utils.get_stream_url(nid)
-
-	if nid != 'live':
-		thumbnail_url = meta['thumbnail_url']
-		listitem = xbmcgui.ListItem(label=meta['title'], iconImage=thumbnail_url, thumbnailImage=thumbnail_url)
-	else:
-		listitem = xbmcgui.ListItem(label='')
+	(stream_url, meta) = utils.get_stream_url(nid)
+	listitem = xbmcgui.ListItem(label=meta['title'], iconImage=meta['thumbnail_url'], thumbnailImage=meta['thumbnail_url'])
 
 	utils.log("Playing stream: %s" % stream_url)
 

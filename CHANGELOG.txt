@@ -1,3 +1,8 @@
+1.20
+
+ - update for 2017 website changes
+
+ 
 1.11
 
 - Fix for live streams, since RTMP is gone
