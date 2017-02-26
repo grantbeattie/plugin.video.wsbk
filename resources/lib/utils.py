@@ -29,6 +29,7 @@ COOKIES = os.path.join(TEMP, 'cookies.txt')
 addon = xbmcaddon.Addon(config.ADDON_ID)
 
 def http_get(url, loadcookies = False, savecookies = False):
+	log(url)
 	cj = cookielib.LWPCookieJar(COOKIES)
 
 	cookie_handler = urllib2.HTTPCookieProcessor(cj)
@@ -117,6 +118,7 @@ def wsbk_login():
 
 
 def get_stream_url(nid):
+	meta = {}
 	if nid == 'live':
 		json_url = "/en/video/live/mobile/srcweb/0"
 		res = http_get(json_url, loadcookies = True)
@@ -125,6 +127,8 @@ def get_stream_url(nid):
 		# 0 -> akamai, 1 -> level3
 		feed = json_data['live_data'][0]['langs_content']['feeds'][0]
 		stream_url = feed['m3u8']
+		meta['title'] = 'WorldSBK Live stream'
+		meta['thumbnail_url'] = ''
 
 	else:
 		json_url = "/en/video/demand/mobile/srcweb/0/%s" % nid
@@ -133,10 +137,12 @@ def get_stream_url(nid):
 
 		stream_url = ''
 		if 'videos' in json_data:
+			meta['title'] = json_data['videos'][0]['title']
+			meta['thumbnail_url'] = json_data['videos'][0]['urlimage']
 			feed = json_data['videos'][0]['video_data'][0]['langs_content'][0]['feeds'][0]
 			stream_url = feed['m3u8']
 
-	return stream_url
+	return (stream_url, meta)
 
 
 def get_metadata(nid):
@@ -151,10 +157,10 @@ def get_metadata(nid):
 	meta = {}
 	if 'error_msg' in root.attrib:
 		meta['error_msg'] = root.attrib['error_msg']
-	else:
-		if nid != 'live':
-			if root.find('video').attrib['title'] is not None: meta['title'] = root.find('video').attrib['title']
-			if root.find('video').attrib['image_url'] is not None: meta['thumbnail_url'] = root.find('video').attrib['image_url']
+	#else:
+	#	if nid != 'live':
+	#		if root.find('video').attrib['title'] is not None: meta['title'] = root.find('video').attrib['title']
+	#		if root.find('video').attrib['image_url'] is not None: meta['thumbnail_url'] = root.find('video').attrib['image_url']
 
 	return meta
 
